@@ -3,6 +3,7 @@ const Walker = require('../../util/walk')
 const path = require('path');
 const jwt = require('jsonwebtoken');
 const fs = require('fs');
+const crypto = require('crypto');
 
 class Router {
     constructor(client) {
@@ -21,8 +22,20 @@ class Router {
         files.files.forEach(async file => {
             const routePath = file.exact.split(this.name)[1].replace(/\\/gi, '/').split('.')[0]
             if (file.name === 'index.html') {
-                this.router.get('/', (req, res) => {
-                    return res.sendFile(file.exact)
+                this.router.get('/', async (req, res) => {
+                    const pages = await this.client.db.query('SELECT * FROM titles');
+                    
+                    const cs = pages.filter(page => page.subject === 'Computer Science')
+                    const ph = pages.filter(page => page.subject === 'Physics')
+                    const ma = pages.filter(page => page.subject === 'Maths')
+                    
+                    for (let i = 0; i < cs.length; i++) cs[i] = `<li style='color: var(--success-color); cursor: pointer;' onclick="window.location.href='/notes/edit/${cs[i].uuid}'">${cs[i].name}</li>`
+                    for (let i = 0; i < ph.length; i++) ph[i] = `<li style='color: var(--info-color); cursor: pointer;' onclick="window.location.href='/notes/edit/${ph[i].uuid}'">${ph[i].name}</li>`
+                    for (let i = 0; i < ma.length; i++) ma[i] = `<li style='color: var(--error-color); cursor: pointer;' onclick="window.location.href='/notes/edit/${ma[i].uuid}'">${ma[i].name}</li>`
+
+
+                    const indexFile = fs.readFileSync(file.exact, 'utf8').replace('{{NAME}}', '').replace('{{notes_compsci}}', cs.join('')).replace('{{notes_physics}}', ph.join('')).replace('{{notes_maths}}', ma.join(''))
+                    return res.send(indexFile)
                 })
             } else if (!file.name.startsWith('special_')) {
                 this.router.get(routePath, (req, res) => {
@@ -31,6 +44,16 @@ class Router {
                     
                 })
             }
+        })
+
+        this.router.post('/create', this.authenticateToken, async (req, res) => {
+            const type = req.body.type;
+            const pageUUID = crypto.randomUUID();
+
+            await this.client.db.query('INSERT INTO contents VALUES (?, ?)', [pageUUID, `Notes go brr`])
+            await this.client.db.query('INSERT INTO titles VALUES (?, ?, ?)', [`New Notes for ${type}`, pageUUID, type])
+
+            return res.json({ success: true, uuid: pageUUID });
         })
 
         this.router.post('/token', (req, res) => {
@@ -43,6 +66,7 @@ class Router {
                 if (err) return res.json(403)
                 const accessToken = generateAccessToken({ name: user.name })
                 res.json({ success: true, accessToken: accessToken })
+                req.user = user
             })
         })
 
@@ -63,6 +87,7 @@ class Router {
                         const user = {
                             name: req.body.username
                         }    
+                        req.user = user
 
                         const accessToken = generateAccessToken(user)
                         const refreshToken = jwt.sign(user, process.env.REFRESH_SECRET)
@@ -97,7 +122,7 @@ class Router {
         })
 
         function generateAccessToken(user) {
-            return jwt.sign(user, process.env.ACCESS_SECRET, { expiresIn: '30s' })
+            return jwt.sign(user, process.env.ACCESS_SECRET, { expiresIn: '20m' })
         }
     }
 

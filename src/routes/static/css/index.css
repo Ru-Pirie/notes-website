@@ -365,18 +365,6 @@ input[type="password"] {
     width: 100%;
 }
 
-textarea {
-    width: 50%;
-    color: var(--bg-color);
-    font-weight: lighter;
-    font-family: 'Ubuntu Mono', monospace;
-    text-align: center;
-    font-size: 1.2em;
-    height: 20vh;
-    padding: 10px;
-    background-color: var(--sub-color);
-}
-
 b {
     color: var(--success-color);
 }
@@ -408,3 +396,8 @@ b {
 .compSciTopics {
     color: var(--sub-color);
 }
+
+a.disabled {
+    pointer-events: none;
+    cursor: default;
+  }
