@@ -1,0 +1,1 @@
+INSERT INTO users VALUES ('21rp0909', 'b()ingb0!ng', 9);
