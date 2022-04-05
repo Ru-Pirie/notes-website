@@ -357,7 +357,8 @@ input[type="text"] {
 }
 
 b {
-    color: var(--success-color);
+    font-weight: 750;
+    color: var(--error-color);
 }
 
 .empty {
@@ -402,4 +403,8 @@ input[type="password"] {
 a.disabled {
     pointer-events: none;
     cursor: default;
+  }
+
+  [contenteditable] {
+    outline: 0px solid transparent;
   }

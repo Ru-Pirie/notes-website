@@ -13,6 +13,8 @@
     <script>
         let timeSinceSave = 0;
 
+        setInterval(() => { check() }, 900000)
+
         async function updateTitle() {
             if (Date.now() - timeSinceSave > 15000) {
                 timeSinceSave = Date.now()
@@ -31,14 +33,14 @@
             if (Date.now() - timeSinceSave > 15000) {
                 timeSinceSave = Date.now()
                 await fetch(`/notes/save/${window.location.href.split('/')[5]}`, { 
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.access_token}`
-                },
-                body: JSON.stringify({ title: document.getElementById('title').innerHTML.toString(), content: document.getElementById('content').innerHTML.toString() })
-            })
-            }
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.access_token}`
+                    },
+                    body: JSON.stringify({ title: document.getElementById('title').innerHTML.toString(), content: document.getElementById('content').innerHTML.toString() })
+                })
+            }           
         }
 
         async function forceSave() {
@@ -51,6 +53,36 @@
                 },
                 body: JSON.stringify({ title: document.getElementById('title').innerHTML.toString(), content: document.getElementById('content').innerHTML.toString() })
             })
+        }
+
+        function format(){
+            const boldArray = document.getElementById('content').innerHTML.match(/( \*)(\w|\s){1,}(?! )(\*)/gi)
+            const italicArray = document.getElementById('content').innerHTML.match(/( \_)(\w|\s){1,}(?! )(\_)/gi)
+            const subTitle = document.getElementById('content').innerHTML.match(/##.[^<]{1,}(?=<)/gi)
+
+            if (boldArray) {
+                boldArray.forEach(element => {
+                let doc = document.getElementById('content').innerHTML
+                doc = doc.replace(element, ` <b>${element.substring(2, element.length - 1)}</b>&nbsp;`)
+                document.getElementById('content').innerHTML = doc;
+            });
+            }
+
+            if (italicArray) {
+                italicArray.forEach(element => {
+                let doc = document.getElementById('content').innerHTML
+                doc = doc.replace(element, ` <em>${element.substring(2, element.length - 1)}</em>&nbsp;`)
+                document.getElementById('content').innerHTML = doc;
+            });
+            }
+
+            if (subTitle) {
+                subTitle.forEach(element => {
+                    let doc = document.getElementById('content').innerHTML
+                    doc = doc.replace(element, ` <h2>${element.substring(3, element.length - 1)}</h2><br>&nbsp;`)
+                    document.getElementById('content').innerHTML = doc;
+                });
+            }
         }
 
         document.addEventListener("keydown", function(e) {
@@ -121,7 +153,7 @@
                         {{CONTENT}}
                     </div>
                     <br>
-                    <p><em style="color: var(--success-color); cursor: pointer; font-weight: 700; font-size: large;" onclick="forceSave()">Save</em></p>
+                    <p><a style="color: var(--success-color); cursor: pointer; font-weight: 700; font-size: large;" onclick="forceSave()">Save</a>&nbsp;|&nbsp;<a style="color: var(--info-color); cursor: pointer; font-weight: 700; font-size: large;" onclick="format()">Format</a></p>
                 </div>
             </div>
 

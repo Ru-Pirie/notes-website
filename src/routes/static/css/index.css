@@ -365,8 +365,13 @@ input[type="password"] {
     width: 100%;
 }
 
+[contenteditable] {
+    outline: 0px solid transparent;
+  }
+
 b {
-    color: var(--success-color);
+    font-weight: 750;
+    color: var(--error-color);
 }
 
 .empty {
