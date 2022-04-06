@@ -46,6 +46,11 @@ class Router {
             }
         })
 
+        this.router.post('/account', this.authenticateToken, async (req, res) => {
+          const user = await this.client.db.query('SELECT * FROM users WHERE username = ?', [req.user.name])
+          return res.json(user[0]);
+        })
+
         this.router.post('/create', this.authenticateToken, async (req, res) => {
             const type = req.body.type;
             const pageUUID = crypto.randomUUID();
@@ -54,6 +59,11 @@ class Router {
             await this.client.db.query('INSERT INTO titles VALUES (?, ?, ?)', [`New Notes for ${type}`, pageUUID, type])
 
             return res.json({ success: true, uuid: pageUUID });
+        })
+
+      this.router.post('/resetPassword', this.authenticateToken, async (req, res) => {      
+            await this.client.db.query('UPDATE users SET password = ? WHERE username = ?', [req.body.password, req.user.name])
+            return res.json({ success: true })
         })
 
         this.router.post('/token', (req, res) => {
@@ -69,12 +79,6 @@ class Router {
                 req.user = user
             })
         })
-
-        this.router.delete('/logout', (req, res) => {
-            this.refreshTokens = this.refreshTokens.filter(token => token !== req.body.token)
-            res.sendStatus(204)
-        })
-
 
         this.router.post('/login', async (req, res) => {
             if (req.body.username || req.body.password) {
@@ -96,7 +100,7 @@ class Router {
 
                     } else res.end(fs.readFileSync(`${this.dirPath}/special_login.html`, 'utf8').replace('{{err}}', 'No user was found with the given username and password'))
                 }
-            } else if (req.headers['authorization']) {
+            } else if (fs.readFileSync(file.exact, 'utf8')) {
                 console.log("Logged in check")
             } else return res.end(fs.readFileSync(`${this.dirPath}/special_login.html`, 'utf8').replace('{{err}}', 'Illigal request made. I\'m unsure of what you did.'))
             

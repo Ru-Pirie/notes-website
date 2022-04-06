@@ -408,3 +408,7 @@ a.disabled {
   [contenteditable] {
     outline: 0px solid transparent;
   }
+
+input[type='password'].hoverShowPassword:hover {
+  background-color: none;
+}

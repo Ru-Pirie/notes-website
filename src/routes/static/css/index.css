@@ -406,3 +406,7 @@ a.disabled {
     pointer-events: none;
     cursor: default;
   }
+
+input[type='password'].hoverShowPassword:hover {
+  background-color: none;
+}
