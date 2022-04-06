@@ -23,7 +23,7 @@ async function getAccount() {
   const json = await res.json();
   document.getElementById('accountDetails').style = 'display: visible;';
   document.getElementById('accountUsername').innerHTML = `Username: ${json.username}`;
-  document.getElementById('accountPassword').value = `Password: ${json.password}`;
+  document.getElementById('accountPassword').value = `${json.password}`;
   document.getElementById('accountAccess').innerHTML = `Access Level: ${json.access}`;
 }
 

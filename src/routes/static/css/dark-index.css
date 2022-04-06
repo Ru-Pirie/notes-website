@@ -409,6 +409,24 @@ a.disabled {
     outline: 0px solid transparent;
   }
 
-input[type='password'].hoverShowPassword:hover {
-  background-color: none;
+  input[type="password"].hoverShowPassword {
+    color: var(--main-color);
+    font-family: 'Ubuntu Mono', monospace;
+    text-align: center;
+    font-size: 1.2em;
+    border:0;
+    max-width: fit-content;
+    outline:0;
+    background-color: var(--bg-color);
+}
+
+input[type="text"].hoverShowPassword {
+    color: var(--main-color);
+    max-width: fit-content;
+    font-family: 'Ubuntu Mono', monospace;
+    text-align: center;
+    font-size: 1.2em;
+    border:0;
+    outline:0;
+    background-color: var(--bg-color);
 }
