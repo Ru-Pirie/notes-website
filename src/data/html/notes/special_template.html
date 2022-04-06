@@ -32,6 +32,7 @@
 
         async function updateContent() {
             if (Date.now() - timeSinceSave > 15000) {
+                check()
                 timeSinceSave = Date.now()
                 await fetch(`/notes/save/${window.location.href.split('/')[5]}`, { 
                     method: 'POST',
@@ -45,6 +46,7 @@
         }
 
         async function forceSave() {
+            check()
             timeSinceSave = Date.now()
             await fetch(`/notes/save/${window.location.href.split('/')[5]}`, { 
                 method: 'POST',
@@ -80,7 +82,7 @@
             if (subTitle) {
                 subTitle.forEach(element => {
                     let doc = document.getElementById('content').innerHTML
-                    doc = doc.replace(element, ` <h2>${element.substring(3, element.length - 1)}</h2><br>&nbsp;`)
+                    doc = doc.replace(element, ` <h2>${element.substring(3)}</h2><br>&nbsp;`)
                     document.getElementById('content').innerHTML = doc;
                 });
             }
